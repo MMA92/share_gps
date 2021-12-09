@@ -14,17 +14,21 @@ from client import get_gps
 
 
 
-
 alpha = 1.0
+fullscreen = False
+
 
 def pressed_keys(e):
-	global alpha
+	global alpha,fullscreen
 	if e.name == "f2":
 		if alpha == 1.0:
 			alpha = 0.0
 		else:
 			alpha = 1.0
 		print("f2 pressed")
+	if e.name == "f3":
+		fullscreen = not fullscreen
+		print("f3 pressed")
 
 
 class GuiPart:
@@ -56,6 +60,7 @@ class ThreadedClient:
 		self.label = label
 		self.queue = queue.Queue() 	# Create the queue
 		self.photo = None
+		self.size = (333,192)
 
 		self.gui = GuiPart(root, self.queue, self.endApplication) # Set up the GUI part
 
@@ -88,15 +93,23 @@ class ThreadedClient:
 
 		data = get_gps()
 		#data_points = [[random.uniform(48.7,49.0),random.uniform(8.1,9.6) ]]
-		data_points = [[float(data["lati"]),float(data["long"])]]
+		if data != None:
+			data_points = [[float(data["lati"]),float(data["long"])]]
+			self.update_text(data)		
+			img = vis.create_image(color=(255, 0, 0), width=3)
+			img = vis.draw_points(img,data=data_points)
+			img = img.resize(self.size, Image.ANTIALIAS)
+		
+			self.photo = ImageTk.PhotoImage(img,master=self.root)
+			self.label.config(image = self.photo) 
 
-		self.update_text(data)		
+		if fullscreen:
+			self.root.geometry("1400x1000+22+44")
+			self.size = (round(333*3.85),round(192*3.85))
+		else:
+			self.root.geometry("400x400+30+30")
+			self.size = (333,192)
 
-		img = vis.create_image(color=(255, 0, 0), width=3)
-		img = vis.draw_points(img,data=data_points)
-		img = img.resize((333,192), Image.ANTIALIAS)
-		self.photo = ImageTk.PhotoImage(img,master=self.root)
-		self.label.config(image = self.photo) 
 
 		self.gui.processIncoming()
 		if not self.running:			

@@ -69,19 +69,19 @@ class GPSVis(object):
     
     def draw_points(self,img, data = None):
 
-        radius = 10
+        r1 = 5
+        r2 = 30
+        r3 = 50
                 
         elispe_points = []
         if data == None:
             data = self.data
-
-        for a in data:
-            x1, y1 = self.scale_to_img(a, (img.size[0], img.size[1]))
-            elispe_points.append((x1-radius,y1-radius,x1+radius,y1+radius))        
-
+      
         draw = ImageDraw.Draw(img)
-        for e in elispe_points:
-            draw.ellipse(e, fill=(255,0,0), outline=None, width=100)        
+        x1, y1 = self.scale_to_img(data[0], (img.size[0], img.size[1]))
+        draw.ellipse((x1-r1,y1-r1,x1+r1,y1+r1), fill=(255,0,0), outline=None, width=3)
+        draw.ellipse((x1-r2,y1-r2,x1+r2,y1+r2), fill=None, outline=(255,0,0), width=3)
+        draw.ellipse((x1-r3,y1-r3,x1+r3,y1+r3), fill=None, outline=(255,0,0), width=3)        
 
         return img
 
