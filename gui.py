@@ -13,7 +13,6 @@ from main import GPSVis
 from client import get_gps
 
 
-
 alpha = 1.0
 fullscreen = False
 
@@ -77,14 +76,14 @@ class ThreadedClient:
 
 		accuracy = str(round(float(data["accuracy"]),2))
 
-		w1["text"] = data["counter"]
-		w2["text"] = data["lati"]
-		w3["text"] = data["long"]
-		w4["text"] = "sats: " + data["satellites"]
-		w5["text"] = data["method"]
-		w6["text"] = "± " + accuracy
-		w7["text"] = alitude
-		w8["text"] = data["speed"] + "km/h"
+		text_boxes[0]["text"] = data["counter"]
+		text_boxes[1]["text"] = data["lati"]
+		text_boxes[2]["text"] = data["long"]
+		text_boxes[3]["text"] = "sats: " + data["satellites"]
+		text_boxes[4]["text"] = data["method"]
+		text_boxes[5]["text"] = "± " + accuracy
+		text_boxes[6]["text"] = alitude
+		text_boxes[7]["text"] = data["speed"] + "km/h"
 		
 	def periodicCall(self):
 		"""
@@ -175,23 +174,13 @@ root.deiconify()
 panel = tk.Label(frame, image = ph,background="white")
 panel.pack(side = "bottom", fill = "both", expand = "yes")
 
-
-w1 = tk.Label(root,text = "NaN", font =("Courier", 14),fg="#888888")
-w2 = tk.Label(root,text = "NaN", font =("Courier", 14),fg="#888888")
-w3 = tk.Label(root,text = "NaN", font =("Courier", 14),fg="#888888")
-w4 = tk.Label(root,text = "NaN", font =("Courier", 14),fg="#888888")
-w5 = tk.Label(root,text = "NaN", font =("Courier", 14),fg="#888888")
-w6 = tk.Label(root,text = "NaN", font =("Courier", 14),fg="#888888")
-w7 = tk.Label(root,text = "NaN", font =("Courier", 14),fg="#888888")
-w8 = tk.Label(root,text = "NaN", font =("Courier", 14),fg="#888888")
-w1.place(x=0,y=210)
-w2.place(x=0,y=240)
-w3.place(x=0,y=270)
-w4.place(x=0,y=300)
-w5.place(x=180,y=210)
-w6.place(x=180,y=240)
-w7.place(x=180,y=270)
-w8.place(x=180,y=300)
+posis = [(0,210),(0,240),(0,270),(0,300),
+(180,210),(180,240),(180,300),(180,300)]
+text_boxes = []
+for i in range(8):
+	label = tk.Label(root,text = "NaN", font =("Courier", 14),fg="#888888")
+	label.place(x=posis[i][0],y=posis[i][1])
+	text_boxes.append(label)
 
 
 ##make window unclickable
