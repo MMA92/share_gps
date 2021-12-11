@@ -1,9 +1,9 @@
 import requests
 import time
 
-def get_gps():
+def get_gps(ip_adr="192.168.0.73"):
     try:
-        resp = requests.get("http://192.168.0.73:8080/",timeout=1)
+        resp = requests.get(f"http://{ip_adr}:8080/",timeout=3)
         data = resp.json()
         
     except (requests.exceptions.RequestException,ConnectionError) as E:

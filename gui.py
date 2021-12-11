@@ -45,7 +45,7 @@ class GuiPart:
 			try:
 				q = self.queue.get()
 
-				root.wm_attributes("-transparentcolor", "white")
+				root.wm_attributes("-transparentcolor",transparent_color)
 				root.wm_attributes('-alpha', alpha)				
 				print(time.strftime("%H:%M:%S"))
 
@@ -71,7 +71,7 @@ class ThreadedClient:
 	def update_text(self,data):		
 		
 		v = data["verticalAccuracy"]
-		a = int(data["altitude"]) - 48  #local offset for baden-württemberg
+		a = data["altitude"]
 		alitude = f"{a}m ±{v}m"
 
 		accuracy = str(round(float(data["accuracy"]),2))
@@ -84,14 +84,32 @@ class ThreadedClient:
 		text_boxes[5]["text"] = "± " + accuracy
 		text_boxes[6]["text"] = alitude
 		text_boxes[7]["text"] = data["speed"] + "km/h"
+
+		for box in text_boxes:
+			box["fg"] = "#888888"
+			box["bg"] = "#EEEEEE"
+		text_boxes[0].place(x=0,y=210)
+		
+	def show_error(self):
+		print("show error")		
+		for box in text_boxes:
+			box["text"] = ""
+			box["bg"] = transparent_color
+		text_boxes[0]["text"] = "Error not connected"
+		text_boxes[0]["bg"] = "#EEEEEE"
+		text_boxes[0]["fg"] = "red"
+		text_boxes[0].place(x=20,y=20)	
+
+		self.label.config(image = "") 
+
 		
 	def periodicCall(self):
 		"""
 		Check every 100 ms if there is something new in the queue.
 		"""
 
-		data = get_gps()
-		#data_points = [[random.uniform(48.7,49.0),random.uniform(8.1,9.6) ]]
+		data = get_gps("10.37.237.101")
+		#data = {"lati":random.uniform(48.7,49.0),"long":random.uniform(8.1,9.6)}
 		if data != None:
 			data_points = [[float(data["lati"]),float(data["long"])]]
 			self.update_text(data)		
@@ -101,6 +119,9 @@ class ThreadedClient:
 		
 			self.photo = ImageTk.PhotoImage(img,master=self.root)
 			self.label.config(image = self.photo) 
+		else:
+			self.show_error()
+
 
 		if fullscreen:
 			self.root.geometry("1400x1000+22+44")
@@ -153,12 +174,14 @@ img = img.resize((333,192), Image.ANTIALIAS) #333,192
 
 
 
+transparent_color = "#add123"
+
 root = tk.Tk()
 
 root.geometry("400x400+30+30") # empty
-root.configure(background='white')
+root.configure(background=transparent_color)
 
-frame = tk.Frame(width = 400 ,height=400, bg="white") #red
+frame = tk.Frame(width = 400 ,height=400, bg=transparent_color) #red
 frame.place(x=0,y=0)
 
 ph = ImageTk.PhotoImage(img,master=root)
@@ -168,14 +191,14 @@ root.overrideredirect(True)
 root.lift()
 root.wm_attributes("-topmost", True)
 root.wm_attributes("-disabled", True)
-root.wm_attributes("-transparentcolor", "white")
+root.wm_attributes("-transparentcolor", transparent_color)
 root.deiconify()
 
-panel = tk.Label(frame, image = ph,background="white")
+panel = tk.Label(frame, image = ph,background=transparent_color)
 panel.pack(side = "bottom", fill = "both", expand = "yes")
 
 posis = [(0,210),(0,240),(0,270),(0,300),
-(180,210),(180,240),(180,300),(180,300)]
+(180,210),(180,240),(180,270),(180,300)]
 text_boxes = []
 for i in range(8):
 	label = tk.Label(root,text = "NaN", font =("Courier", 14),fg="#888888")
